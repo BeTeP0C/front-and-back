@@ -1,48 +1,175 @@
+import { useState, useEffect } from 'react';
 import ProductCard from './components/ProductCard';
+import ProductModal from './components/ProductModal';
+import ConfirmModal from './components/ConfirmModal';
+import { api } from './api';
 import './App.scss';
 
-const products = [
-  {
-    id: 1,
-    image: 'https://avatars.mds.yandex.net/i?id=2b51fc55da95cc65acffd0b8b1cf710d7a9db6e1-4382526-images-thumbs&n=13',
-    title: 'Умные часы Premium',
-    description: 'Стильные умные часы с AMOLED дисплеем, мониторингом здоровья и водозащитой IP68.',
-    price: '12 990',
-    badge: { text: 'Новинка', variant: 'default' }
-  },
-  {
-    id: 2,
-    image: 'https://yandex-images.clstorage.net/g5p2CT151/5a5e14p_M/JIn4Hyx3eXX7ZCiMicwhlKNUxMElNlgAF1si_g9YXkMHl5xoS-PxJ5p5T6Zjno6fC-5qRiCwzZEj_VGbjT-7oDG0uQodan0sqjUw4dnsLYCrIbHNYUcwEWMyK497EGJ_F5-MheonZPdzlYpfpzN-4k6zJl5E2ICAmkxFT9TvvkSsdUDv6Ff4LXf44eDNqB0sFxFMzaU7VEHb8zunYxnSflYKyK1OQ7wzNxGGYwsDUgpixyoacXhs7Kql2Tc0Zy7EDDXkq4iDdIFDaHWopSyxiDM9tP1VgzQVy8tzSytxNn62YkRFIhM0o-sRXtsXN5bmLid6lp3Q0GBKFeVTvHP6fOj5YC8wD6x501DViOlADZyr7dRdpS-sAQ9Hl2uHZUpOCh7kZaYPVFtf5XY_gxvikp6n4qq9pFAQjlHxG7j_rhjkXaTbLLP8FfPwDdB5TB3Ui_3EGR0_qB2LJ4-fm31KkiJOcNmKL9yn62UeswdTGj7GXwKOfYBYbDYBFXs4V5ZIvGWwmzhnoGV_QH14jaABTFdxKMkNv2ARC0Nzz8OJWoaCYhCpjoPAlyNJhsNvU6Ka_oPSEm2EYBy-LeGTHMceFKgVHJM47yCBhxBBvCFMIYjnZSTxgStQbe8Xg7fjiVpeZg5YPVoDuHPnZV5PnxsmUla3npIZVAgQXvnd-1BXKkxEWXSbFJcQffM4Jaw1XKXsd-0k0b2r6I0rmwdPp0luSsriXE0es-jLK52OI3sHHq4Kg-JanUDo_AKlCcNcAzpEYP1AJ7T7DFF_8Emc1cwt4JN9pPUhU4BBr2ePh1cFnhKu8mzJtmNo18-9dhtnD2rO4usurkHM2GS22V2nBMcO1PztTGPw3wiVB0CxnH3QFWwjFVzl9fPA4S_PV4OTeaqu7j4AVYazQONbbQovbw_Kwu7rIoKF8JiM3p3Jo7Dzprx43SD_uLMsBYu0gQghQDlAd42YdX3fWGFz6-OXp5XA',
-    title: 'Беспроводные наушники',
-    description: 'Наушники с активным шумоподавлением и кристально чистым звуком. До 30 часов работы.',
-    price: '8 490'
-  },
-  {
-    id: 3,
-    image: 'https://avatars.mds.yandex.net/get-marketpic/11658607/pic0e27d13844bc5d88752b7a08fe2522be/orig',
-    title: 'Камера Polaroid',
-    description: 'Ретро-камера для мгновенных снимков. Встроенная вспышка и автоматическая экспозиция.',
-    price: '6 390',
-    oldPrice: '7 990',
-    badge: { text: '-20%', variant: 'sale' }
-  }
-];
-
 function App() {
-  return (
-    <div className="app">
-      <header className="app__header">
-        <h1 className="app__title">Каталог товаров</h1>
-        <p className="app__subtitle">Лучшие гаджеты для вашей жизни</p>
-      </header>
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-      <main className="app__products">
-        {products.map(product => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </main>
-    </div>
-  );
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('create');
+    const [editingProduct, setEditingProduct] = useState(null);
+
+    // Состояние для модалки подтверждения удаления
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
+
+    // Загрузка товаров при монтировании
+    useEffect(() => {
+        loadProducts();
+    }, []);
+
+    const loadProducts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await api.getProducts();
+            setProducts(data);
+        } catch (err) {
+            console.error('Ошибка загрузки:', err);
+            setError('Не удалось загрузить товары. Проверьте, запущен ли сервер.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Открыть модалку для создания
+    const openCreate = () => {
+        setModalMode('create');
+        setEditingProduct(null);
+        setModalOpen(true);
+    };
+
+    // Открыть модалку для редактирования
+    const openEdit = (product) => {
+        setModalMode('edit');
+        setEditingProduct(product);
+        setModalOpen(true);
+    };
+
+    // Закрыть модалку
+    const closeModal = () => {
+        setModalOpen(false);
+        setEditingProduct(null);
+    };
+
+    // Открыть модалку подтверждения удаления
+    const handleDeleteClick = (id) => {
+        const product = products.find(p => p.id === id);
+        setProductToDelete(product);
+        setConfirmOpen(true);
+    };
+
+    // Закрыть модалку подтверждения
+    const closeConfirm = () => {
+        setConfirmOpen(false);
+        setProductToDelete(null);
+    };
+
+    // Подтвердить удаление
+    const confirmDelete = async () => {
+        if (!productToDelete) return;
+
+        try {
+            await api.deleteProduct(productToDelete.id);
+            setProducts(prev => prev.filter(p => p.id !== productToDelete.id));
+            closeConfirm();
+        } catch (err) {
+            console.error('Ошибка удаления:', err);
+            alert('Ошибка удаления товара');
+        }
+    };
+
+    // Отправка формы (создание/редактирование)
+    const handleSubmitModal = async (payload) => {
+        try {
+            if (modalMode === 'create') {
+                const newProduct = await api.createProduct(payload);
+                setProducts(prev => [...prev, newProduct]);
+            } else {
+                const updatedProduct = await api.updateProduct(payload.id, payload);
+                setProducts(prev => prev.map(p => p.id === payload.id ? updatedProduct : p));
+            }
+            closeModal();
+        } catch (err) {
+            console.error('Ошибка сохранения:', err);
+            alert('Ошибка сохранения товара');
+        }
+    };
+
+    return (
+        <div className="app">
+            <header className="app__header">
+                <div className="app__header-content">
+                    <div>
+                        <h1 className="app__title">TechStore</h1>
+                        <p className="app__subtitle">Интернет-магазин электроники</p>
+                    </div>
+                    <button className="app__add-btn" onClick={openCreate}>
+                        + Добавить товар
+                    </button>
+                </div>
+            </header>
+
+            <main className="app__main">
+                {loading && (
+                    <div className="app__status">Загрузка товаров...</div>
+                )}
+
+                {error && (
+                    <div className="app__status app__status--error">
+                        {error}
+                        <button onClick={loadProducts} className="app__retry-btn">
+                            Повторить
+                        </button>
+                    </div>
+                )}
+
+                {!loading && !error && products.length === 0 && (
+                    <div className="app__status">
+                        Товаров пока нет. Добавьте первый товар!
+                    </div>
+                )}
+
+                {!loading && !error && products.length > 0 && (
+                    <div className="app__products">
+                        {products.map(product => (
+                            <ProductCard
+                                key={product.id}
+                                product={product}
+                                onEdit={openEdit}
+                                onDelete={handleDeleteClick}
+                            />
+                        ))}
+                    </div>
+                )}
+            </main>
+
+            <footer className="app__footer">
+                <p>© {new Date().getFullYear()} TechStore. Практическое занятие №4</p>
+            </footer>
+
+            <ProductModal
+                isOpen={modalOpen}
+                mode={modalMode}
+                initialProduct={editingProduct}
+                onClose={closeModal}
+                onSubmit={handleSubmitModal}
+            />
+
+            <ConfirmModal
+                isOpen={confirmOpen}
+                title="Удалить товар?"
+                message={productToDelete ? `Вы уверены, что хотите удалить "${productToDelete.name}"? Это действие нельзя отменить.` : ''}
+                onConfirm={confirmDelete}
+                onCancel={closeConfirm}
+            />
+        </div>
+    );
 }
 
 export default App;

@@ -2,140 +2,138 @@
 @use '../../styles/mixins' as *;
 
 .product-card {
-  position: relative;
-  background: $color-card-bg;
-  border-radius: $border-radius;
-  overflow: hidden;
-  @include transition(transform, box-shadow);
-  @include gradient-border(1px);
-
-  // Hover эффект карточки
-  &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: $box-shadow-hover;
-
-    // Вложенный селектор: zoom изображения
-    .product-card__image {
-      transform: scale(1.1);
-    }
-
-    // Вложенный селектор: показ overlay
-    .product-card__overlay {
-      opacity: 1;
-    }
-  }
-
-  // Контейнер изображения
-  &__image-container {
     position: relative;
-    height: 240px;
+    background: $color-card-bg;
+    border-radius: $border-radius;
     overflow: hidden;
-    background: linear-gradient(135deg, $color-primary, $color-card-bg);
-  }
+    @include transition(transform, box-shadow);
+    @include gradient-border(1px);
 
-  // Изображение товара
-  &__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    @include transition(transform);
-  }
+    &:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: $box-shadow-hover;
 
-  // Overlay при hover
-  &__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to top,
-      rgba($color-primary, 0.8) 0%,
-      transparent 50%
-    );
-    opacity: 0;
-    @include transition(opacity);
-  }
+        .product-card__image {
+            transform: scale(1.1);
+        }
+    }
 
-  // Позиция бейджа
-  &__badge {
-    position: absolute;
-    top: $spacing-md;
-    left: $spacing-md;
-    z-index: 2;
-  }
-
-  // Контент карточки
-  &__content {
-    @include flex(column, flex-start, stretch, $spacing-sm);
-    padding: $spacing-lg;
-  }
-
-  // Заголовок
-  &__title {
-    font-size: $font-size-xl;
-    font-weight: 600;
-    color: $color-text;
-    @include line-clamp(1);
-  }
-
-  // Описание
-  &__description {
-    font-size: $font-size-sm;
-    color: $color-text-muted;
-    line-height: 1.6;
-    @include line-clamp(2);
-    min-height: 44px;
-  }
-
-  // Футер с ценой и кнопкой
-  &__footer {
-    @include flex(row, space-between, center);
-    margin-top: $spacing-sm;
-    padding-top: $spacing-md;
-    border-top: 1px solid $color-border;
-  }
-
-  // Блок цены
-  &__price-block {
-    @include flex(column, flex-start, flex-start, 2px);
-  }
-
-  // Старая цена (зачёркнутая)
-  &__old-price {
-    font-size: $font-size-xs;
-    color: $color-text-muted;
-    text-decoration: line-through;
-  }
-
-  // Актуальная цена
-  &__price {
-    font-size: $font-size-lg;
-    font-weight: 700;
-    color: $color-accent;
-  }
-}
-
-// Адаптивность
-@media (max-width: 640px) {
-  .product-card {
     &__image-container {
-      height: 200px;
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+        background: linear-gradient(135deg, $color-primary, $color-card-bg);
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        @include transition(transform);
+    }
+
+    &__placeholder {
+        width: 100%;
+        height: 100%;
+        @include flex(column, center, center, $spacing-sm);
+        background: linear-gradient(135deg, rgba($color-accent, 0.1), rgba($color-badge-new, 0.1));
+        
+        span {
+            font-size: $font-size-sm;
+            font-weight: 500;
+            color: $color-text-muted;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    }
+
+    &__placeholder-icon {
+        width: 48px;
+        height: 48px;
+        color: $color-text-muted;
+        opacity: 0.5;
+    }
+
+    &__badge {
+        position: absolute;
+        top: $spacing-sm;
+        left: $spacing-sm;
+        z-index: 2;
     }
 
     &__content {
-      padding: $spacing-md;
+        @include flex(column, flex-start, stretch, $spacing-xs);
+        padding: $spacing-lg;
+    }
+
+    &__category {
+        font-size: $font-size-xs;
+        font-weight: 600;
+        color: $color-accent;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     &__title {
-      font-size: $font-size-lg;
+        font-size: $font-size-lg;
+        font-weight: 600;
+        color: $color-text;
+        @include line-clamp(1);
+    }
+
+    &__description {
+        font-size: $font-size-sm;
+        color: $color-text-muted;
+        line-height: 1.5;
+        @include line-clamp(2);
+        min-height: 42px;
     }
 
     &__footer {
-      flex-direction: column;
-      gap: $spacing-sm;
-      align-items: stretch;
-
-      .button {
-        width: 100%;
-      }
+        @include flex(row, space-between, center);
+        margin-top: $spacing-sm;
+        padding-top: $spacing-md;
+        border-top: 1px solid $color-border;
     }
-  }
+
+    &__price-block {
+        @include flex(column, flex-start, flex-start, 2px);
+    }
+
+    &__price {
+        font-size: $font-size-lg;
+        font-weight: 700;
+        color: $color-accent;
+    }
+
+    &__stock {
+        font-size: $font-size-xs;
+        color: $color-text-muted;
+    }
+
+    &__actions {
+        @include flex(row, flex-end, center, $spacing-xs);
+    }
+}
+
+@media (max-width: 640px) {
+    .product-card {
+        &__image-container {
+            height: 160px;
+        }
+
+        &__content {
+            padding: $spacing-md;
+        }
+
+        &__footer {
+            flex-direction: column;
+            gap: $spacing-sm;
+            align-items: stretch;
+        }
+
+        &__actions {
+            justify-content: center;
+        }
+    }
 }
