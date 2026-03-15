@@ -3,11 +3,10 @@ import './ProductModal.scss';
 
 const ProductModal = ({ isOpen, mode, initialProduct, onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
-        name: '',
+        title: '',
         category: '',
         description: '',
         price: '',
-        stock: '',
         image: ''
     });
     const [imagePreviewError, setImagePreviewError] = useState(false);
@@ -28,21 +27,19 @@ const ProductModal = ({ isOpen, mode, initialProduct, onClose, onSubmit }) => {
     useEffect(() => {
         if (mode === 'edit' && initialProduct) {
             setFormData({
-                name: initialProduct.name || '',
+                title: initialProduct.title || '',
                 category: initialProduct.category || '',
                 description: initialProduct.description || '',
                 price: initialProduct.price || '',
-                stock: initialProduct.stock || '',
                 image: initialProduct.image || ''
             });
             setImagePreviewError(false);
         } else {
             setFormData({
-                name: '',
+                title: '',
                 category: '',
                 description: '',
                 price: '',
-                stock: '',
                 image: ''
             });
             setImagePreviewError(false);
@@ -67,8 +64,7 @@ const ProductModal = ({ isOpen, mode, initialProduct, onClose, onSubmit }) => {
         
         const payload = {
             ...formData,
-            price: Number(formData.price),
-            stock: Number(formData.stock)
+            price: Number(formData.price)
         };
 
         if (mode === 'edit' && initialProduct) {
@@ -125,12 +121,12 @@ const ProductModal = ({ isOpen, mode, initialProduct, onClose, onSubmit }) => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="name">Название</label>
+                        <label htmlFor="title">Название</label>
                         <input
                             type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
+                            id="title"
+                            name="title"
+                            value={formData.title}
                             onChange={handleChange}
                             required
                             placeholder="Введите название товара"
@@ -162,33 +158,18 @@ const ProductModal = ({ isOpen, mode, initialProduct, onClose, onSubmit }) => {
                         />
                     </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="price">Цена (₽)</label>
-                            <input
-                                type="number"
-                                id="price"
-                                name="price"
-                                value={formData.price}
-                                onChange={handleChange}
-                                required
-                                min="0"
-                                placeholder="0"
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="stock">На складе</label>
-                            <input
-                                type="number"
-                                id="stock"
-                                name="stock"
-                                value={formData.stock}
-                                onChange={handleChange}
-                                min="0"
-                                placeholder="0"
-                            />
-                        </div>
+                    <div className="form-group">
+                        <label htmlFor="price">Цена (₽)</label>
+                        <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            value={formData.price}
+                            onChange={handleChange}
+                            required
+                            min="0"
+                            placeholder="0"
+                        />
                     </div>
 
                     <div className="modal__actions">

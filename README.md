@@ -1,12 +1,13 @@
 # TechStore — Интернет-магазин электроники
 
-Полнофункциональное веб-приложение интернет-магазина электроники, разработанное в рамках практических занятий по дисциплине "Фронтенд и бэкенд разработка".
+Полнофункциональное веб-приложение интернет-магазина электроники с аутентификацией пользователей, разработанное в рамках практических занятий по дисциплине "Фронтенд и бэкенд разработка".
 
 ## 📋 Описание проекта
 
 Проект представляет собой SPA-приложение с клиент-серверной архитектурой:
 - **Frontend**: React + Vite + SCSS
 - **Backend**: Node.js + Express.js
+- **Аутентификация**: bcrypt (хеширование паролей с солью)
 - **Документация API**: Swagger (OpenAPI 3.0)
 
 ## 🛠 Технологии
@@ -20,6 +21,7 @@
 ### Backend
 - Node.js
 - Express.js
+- bcrypt (хеширование паролей)
 - nanoid (генерация ID)
 - cors (CORS middleware)
 - swagger-jsdoc + swagger-ui-express (документация API)
@@ -29,7 +31,7 @@
 ```
 front-and-back/
 ├── server/                     # Backend
-│   ├── app.js                  # Главный файл сервера с Swagger
+│   ├── app.js                  # Главный файл сервера
 │   ├── package.json
 │   └── node_modules/
 ├── src/                        # Frontend
@@ -94,62 +96,135 @@ npm run dev
 
 ## 📡 API Endpoints
 
+### Аутентификация (Auth)
+
 | Метод | Путь | Описание |
 |-------|------|----------|
-| GET | `/api/products` | Получить все товары |
+| POST | `/api/auth/register` | Регистрация пользователя |
+| POST | `/api/auth/login` | Вход в систему |
+
+### Товары (Products)
+
+| Метод | Путь | Описание |
+|-------|------|----------|
+| GET | `/api/products` | Получить список товаров |
 | GET | `/api/products/:id` | Получить товар по ID |
-| POST | `/api/products` | Создать новый товар |
-| PATCH | `/api/products/:id` | Обновить товар |
+| POST | `/api/products` | Создать товар |
+| PUT | `/api/products/:id` | Обновить параметры товара |
 | DELETE | `/api/products/:id` | Удалить товар |
 
-### Структура объекта товара (Product)
+### Структура сущности "Пользователь" (User)
 
 ```json
 {
   "id": "abc123",
-  "name": "Умные часы Premium",
+  "email": "ivan@example.com",
+  "first_name": "Иван",
+  "last_name": "Петров",
+  "password": "$2b$10$..." // хешированный bcrypt
+}
+```
+
+### Структура сущности "Товар" (Product)
+
+```json
+{
+  "id": "xyz789",
+  "title": "Умные часы Premium",
   "category": "Часы",
   "description": "Стильные умные часы с AMOLED дисплеем",
   "price": 12990,
-  "stock": 15,
   "image": "https://example.com/watch.jpg"
 }
+```
+
+## 🔐 Аутентификация
+
+### Хеширование паролей (bcrypt)
+
+Пароли хешируются с использованием алгоритма bcrypt с солью:
+
+```javascript
+const bcrypt = require('bcrypt');
+
+// Хеширование
+async function hashPassword(password) {
+    const rounds = 10;
+    return bcrypt.hash(password, rounds);
+}
+
+// Проверка
+async function verifyPassword(password, passwordHash) {
+    return bcrypt.compare(password, passwordHash);
+}
+```
+
+### Пример регистрации
+
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"ivan@example.com","first_name":"Иван","last_name":"Петров","password":"qwerty123"}'
+```
+
+### Пример входа
+
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"ivan@example.com","password":"qwerty123"}'
 ```
 
 ## ✨ Функциональность
 
 ### Карточка товара
-- Название товара
+- Название (title)
 - Категория
 - Описание
 - Цена
-- Количество на складе
 - Изображение (с заглушкой при ошибке загрузки)
-- Индикатор наличия (бейдж)
 
 ### CRUD операции
 - ✅ Просмотр списка товаров (12 товаров по умолчанию)
-- ✅ Добавление нового товара через модальное окно
+- ✅ Добавление нового товара
 - ✅ Редактирование товара
 - ✅ Удаление товара с подтверждением
+
+### Аутентификация
+- ✅ Регистрация с хешированием пароля (bcrypt)
+- ✅ Вход с проверкой пароля
+- ✅ Защита от дублирования email
 
 ### UI/UX
 - Адаптивный дизайн
 - Тёмная тема
 - Анимации и hover-эффекты
 - Модальные окна с блокировкой скролла
-- Превью изображения при редактировании
 
 ## 📖 Swagger документация
 
 Интерактивная документация API доступна по адресу: http://localhost:3000/api-docs
 
 Возможности:
-- Просмотр всех эндпоинтов
+- Просмотр всех эндпоинтов (Auth + Products)
 - Описание параметров и ответов
 - Тестирование запросов в браузере (Try it out)
 
 ## 🧪 Тестирование API
+
+### Регистрация пользователя
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","first_name":"Test","last_name":"User","password":"password123"}'
+```
+
+### Вход в систему
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}'
+```
 
 ### Получить все товары
 ```bash
@@ -160,19 +235,7 @@ curl http://localhost:3000/api/products
 ```bash
 curl -X POST http://localhost:3000/api/products \
   -H "Content-Type: application/json" \
-  -d '{"name":"Новый товар","category":"Категория","price":9990,"stock":10}'
-```
-
-### Обновить товар
-```bash
-curl -X PATCH http://localhost:3000/api/products/{id} \
-  -H "Content-Type: application/json" \
-  -d '{"price":8990}'
-```
-
-### Удалить товар
-```bash
-curl -X DELETE http://localhost:3000/api/products/{id}
+  -d '{"title":"Новый товар","category":"Категория","description":"Описание","price":9990}'
 ```
 
 ## 📚 Выполненные практические занятия
@@ -196,6 +259,12 @@ curl -X DELETE http://localhost:3000/api/products/{id}
 - Подключение Swagger (swagger-jsdoc, swagger-ui-express)
 - JSDoc-аннотации для документирования API
 - Интерактивная документация по адресу /api-docs
+
+### Практическое занятие №7
+- Аутентификация пользователей
+- Хеширование паролей с bcrypt + соль
+- Маршруты /api/auth/register и /api/auth/login
+- Сущность User с полями: id, email, first_name, last_name, password
 
 ## 👨‍💻 Автор
 
