@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +18,7 @@ import {
   ApiParam,
   ApiQuery,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import {
@@ -25,6 +27,7 @@ import {
   ProductResponseDto,
 } from './dto';
 import { Product } from './entities/product.entity';
+import { JwtAuthGuard } from '../auth/guards';
 
 @ApiTags('Products')
 @Controller('api/products')
@@ -78,12 +81,18 @@ export class ProductsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получить товар по ID' })
   @ApiParam({ name: 'id', description: 'ID товара' })
   @ApiResponse({
     status: 200,
     description: 'Данные товара',
     type: ProductResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Не авторизован',
   })
   @ApiResponse({
     status: 404,
@@ -94,6 +103,8 @@ export class ProductsController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Обновить параметры товара' })
   @ApiParam({ name: 'id', description: 'ID товара' })
   @ApiBody({ type: UpdateProductDto })
@@ -101,6 +112,10 @@ export class ProductsController {
     status: 200,
     description: 'Обновленный товар',
     type: ProductResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Не авторизован',
   })
   @ApiResponse({
     status: 404,
@@ -114,12 +129,18 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Удалить товар' })
   @ApiParam({ name: 'id', description: 'ID товара' })
   @ApiResponse({
     status: 204,
     description: 'Товар удален',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Не авторизован',
   })
   @ApiResponse({
     status: 404,

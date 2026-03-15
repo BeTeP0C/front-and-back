@@ -1,9 +1,10 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import {
@@ -12,6 +13,9 @@ import {
   UserResponseDto,
   LoginResponseDto,
 } from './dto';
+import { JwtAuthGuard } from './guards';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { User } from '../users/entities/user.entity';
 
 @ApiTags('Auth')
 @Controller('api/auth')
@@ -61,5 +65,27 @@ export class AuthController {
   })
   async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
     return this.authService.login(loginDto);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Получить текущего пользователя' })
+  @ApiResponse({
+    status: 200,
+    description: 'Данные текущего пользователя',
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Не авторизован (отсутствует или невалидный токен)',
+  })
+  async getMe(@CurrentUser() user: User): Promise<UserResponseDto> {
+    return {
+      id: user.id,
+      email: user.email,
+      first_name: user.firstName,
+      last_name: user.lastName,
+    };
   }
 }
