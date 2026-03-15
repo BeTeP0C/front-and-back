@@ -18,8 +18,6 @@ import {
 @Injectable()
 export class AuthService {
   private readonly SALT_ROUNDS = 10;
-  
-  // Хранилище refresh-токенов в памяти
   private readonly refreshTokens = new Set<string>();
 
   constructor(
@@ -27,109 +25,71 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // Генерация access-токена
   private generateAccessToken(user: { id: string; email: string }): string {
-    const payload = { sub: user.id, email: user.email };
-    return this.jwtService.sign(payload, {
-      secret: ACCESS_SECRET,
-      expiresIn: ACCESS_EXPIRES_IN as string | number,
-    });
+    return this.jwtService.sign(
+      { sub: user.id, email: user.email },
+      { secret: ACCESS_SECRET, expiresIn: ACCESS_EXPIRES_IN } as any,
+    );
   }
 
-  // Генерация refresh-токена
   private generateRefreshToken(user: { id: string; email: string }): string {
-    const payload = { sub: user.id, email: user.email };
-    return this.jwtService.sign(payload, {
-      secret: REFRESH_SECRET,
-      expiresIn: REFRESH_EXPIRES_IN as string | number,
-    });
+    return this.jwtService.sign(
+      { sub: user.id, email: user.email },
+      { secret: REFRESH_SECRET, expiresIn: REFRESH_EXPIRES_IN } as any,
+    );
   }
 
-  async register(registerDto: RegisterDto): Promise<UserResponseDto> {
-    // Проверка существования пользователя
-    const existingUser = await this.usersService.findByEmail(registerDto.email);
-    if (existingUser) {
-      throw new ConflictException('Пользователь с таким email уже существует');
-    }
+  private toUserResponse(user: { id: string; email: string; firstName: string; lastName: string }): UserResponseDto {
+    return { id: user.id, email: user.email, first_name: user.firstName, last_name: user.lastName };
+  }
 
-    // Хеширование пароля
-    const hashedPassword = await bcrypt.hash(registerDto.password, this.SALT_ROUNDS);
+  async register(dto: RegisterDto): Promise<UserResponseDto> {
+    const existing = await this.usersService.findByEmail(dto.email);
+    if (existing) throw new ConflictException('Пользователь с таким email уже существует');
 
-    // Создание пользователя
+    const hashedPassword = await bcrypt.hash(dto.password, this.SALT_ROUNDS);
     const user = await this.usersService.create({
-      email: registerDto.email,
-      firstName: registerDto.first_name,
-      lastName: registerDto.last_name,
+      email: dto.email,
+      firstName: dto.first_name,
+      lastName: dto.last_name,
       password: hashedPassword,
     });
 
-    return {
-      id: user.id,
-      email: user.email,
-      first_name: user.firstName,
-      last_name: user.lastName,
-    };
+    return this.toUserResponse(user);
   }
 
-  async login(loginDto: LoginDto): Promise<LoginResponseDto> {
-    // Поиск пользователя
-    const user = await this.usersService.findByEmail(loginDto.email);
-    if (!user) {
-      throw new NotFoundException('Пользователь не найден');
-    }
+  async login(dto: LoginDto): Promise<LoginResponseDto> {
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user) throw new NotFoundException('Пользователь не найден');
 
-    // Проверка пароля
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Неверный пароль');
-    }
+    const valid = await bcrypt.compare(dto.password, user.password);
+    if (!valid) throw new UnauthorizedException('Неверный пароль');
 
-    // Генерация токенов
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
-
-    // Сохраняем refresh-токен
     this.refreshTokens.add(refreshToken);
 
-    return {
-      accessToken,
-      refreshToken,
-    };
+    return { accessToken, refreshToken };
   }
 
   async refresh(refreshToken: string): Promise<TokensResponseDto> {
-    // Проверка наличия токена в хранилище
     if (!this.refreshTokens.has(refreshToken)) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
     try {
-      // Верификация refresh-токена
-      const payload = this.jwtService.verify(refreshToken, {
-        secret: REFRESH_SECRET,
-      });
-
-      // Поиск пользователя
+      const payload = this.jwtService.verify(refreshToken, { secret: REFRESH_SECRET });
       const user = await this.usersService.findById(payload.sub);
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
+      if (!user) throw new UnauthorizedException('User not found');
 
-      // Ротация refresh-токена: старый удаляем, новый создаём
       this.refreshTokens.delete(refreshToken);
 
-      const newAccessToken = this.generateAccessToken(user);
-      const newRefreshToken = this.generateRefreshToken(user);
+      const newAccess = this.generateAccessToken(user);
+      const newRefresh = this.generateRefreshToken(user);
+      this.refreshTokens.add(newRefresh);
 
-      // Сохраняем новый refresh-токен
-      this.refreshTokens.add(newRefreshToken);
-
-      return {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      };
+      return { accessToken: newAccess, refreshToken: newRefresh };
     } catch {
-      // Удаляем невалидный токен из хранилища
       this.refreshTokens.delete(refreshToken);
       throw new UnauthorizedException('Invalid or expired refresh token');
     }

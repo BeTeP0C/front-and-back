@@ -4,11 +4,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from '../auth.service';
 import { ACCESS_SECRET } from '../../../config/jwt.config';
 
-interface JwtPayload {
-  sub: string;
-  email: string;
-}
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
@@ -19,11 +14,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(payload: { sub: string; email: string }) {
     const user = await this.authService.validateUser(payload.sub);
-    if (!user) {
-      throw new UnauthorizedException('Пользователь не найден');
-    }
+    if (!user) throw new UnauthorizedException();
     return user;
   }
 }
