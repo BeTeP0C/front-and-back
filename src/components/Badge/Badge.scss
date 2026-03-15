@@ -1,0 +1,30 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  @include transition(transform, box-shadow);
+
+  &--default {
+    background: linear-gradient(135deg, $color-badge-new, adjust-color($color-badge-new, $lightness: -20%));
+    color: $color-primary;
+    box-shadow: 0 0 12px rgba($color-badge-new, 0.4);
+  }
+
+  &--sale {
+    background: linear-gradient(135deg, $color-badge-sale, adjust-color($color-badge-sale, $lightness: -15%));
+    color: white;
+    box-shadow: 0 0 12px rgba($color-badge-sale, 0.4);
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}

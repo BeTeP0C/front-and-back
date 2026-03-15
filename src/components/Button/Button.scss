@@ -1,0 +1,44 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.button {
+  @include flex(row, center, center);
+  padding: $spacing-sm $spacing-lg;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  @include transition(transform, box-shadow, background);
+
+  &--primary {
+    background: linear-gradient(135deg, $color-accent, adjust-color($color-accent, $lightness: -10%));
+    color: white;
+    box-shadow: 0 4px 15px rgba($color-accent, 0.3);
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $box-shadow-glow;
+    }
+
+    &:active {
+      transform: translateY(-1px);
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $color-text;
+    border: 1px solid $color-border;
+
+    &:hover {
+      border-color: $color-accent;
+      color: $color-accent;
+    }
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+}
