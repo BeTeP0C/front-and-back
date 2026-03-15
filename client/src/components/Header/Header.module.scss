@@ -1,0 +1,43 @@
+@use '../../styles/variables' as *;
+
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.25rem 2rem;
+  background: rgba($color-card, 0.8); backdrop-filter: blur(10px);
+  border-bottom: 1px solid $color-border;
+  position: sticky; top: 0; z-index: 100;
+}
+
+.left { display: flex; align-items: baseline; gap: 0.75rem; }
+
+.logo {
+  font-size: 1.5rem; font-weight: 700;
+  background: linear-gradient(135deg, $color-cyan, $color-green);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.tagline { font-size: 0.8rem; color: $color-muted; }
+
+.right { display: flex; align-items: center; gap: 0.75rem; }
+
+.greeting { color: $color-muted; font-size: 0.9rem; margin-right: 0.5rem; }
+
+.addBtn {
+  padding: 0.5rem 1.25rem; border: none; border-radius: $radius-sm;
+  background: linear-gradient(135deg, $color-accent, darken($color-accent, 10%));
+  color: #fff; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+  transition: all 0.2s;
+  &:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba($color-accent, 0.3); }
+}
+
+.logoutBtn {
+  padding: 0.5rem 1rem; border: 1px solid $color-border; border-radius: $radius-sm;
+  background: transparent; color: $color-muted; font-weight: 600; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s;
+  &:hover { border-color: $color-red; color: $color-red; }
+}
+
+@media (max-width: 640px) {
+  .header { flex-direction: column; gap: 0.75rem; padding: 1rem; }
+  .greeting { display: none; }
+}

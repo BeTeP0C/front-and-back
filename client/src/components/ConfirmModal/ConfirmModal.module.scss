@@ -1,0 +1,30 @@
+@use '../../styles/variables' as *;
+
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+  z-index: 1100; padding: 1rem;
+}
+
+.modal {
+  background: $color-card; border-radius: $radius; width: 100%; max-width: 360px;
+  padding: 2rem 1.5rem; text-align: center; border: 1px solid $color-border;
+}
+
+.title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+.message { font-size: 0.875rem; color: $color-muted; margin-bottom: 1.5rem; line-height: 1.5; }
+.actions { display: flex; justify-content: center; gap: 0.75rem; }
+
+.btnCancel, .btnDanger {
+  padding: 0.6rem 1.5rem; border-radius: $radius-sm; font-size: 0.9rem;
+  font-weight: 600; cursor: pointer; min-width: 100px; transition: all 0.2s;
+}
+.btnCancel {
+  background: transparent; border: 1px solid $color-border; color: $color-text;
+  &:hover { border-color: $color-muted; }
+}
+.btnDanger {
+  background: linear-gradient(135deg, $color-red, darken($color-red, 10%));
+  border: none; color: #fff;
+  &:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba($color-red, 0.4); }
+}

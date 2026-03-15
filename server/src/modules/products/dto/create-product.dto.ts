@@ -3,44 +3,29 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Min } from 'class-va
 import { Type } from 'class-transformer';
 
 export class CreateProductDto {
-  @ApiProperty({
-    description: 'Название товара',
-    example: 'Умные часы Premium',
-  })
+  @ApiProperty({ example: 'Умные часы Premium' })
   @IsString()
-  @IsNotEmpty({ message: 'Название товара обязательно' })
+  @IsNotEmpty()
   title: string;
 
-  @ApiProperty({
-    description: 'Категория товара',
-    example: 'Часы',
-  })
+  @ApiProperty({ example: 'Часы' })
   @IsString()
-  @IsNotEmpty({ message: 'Категория обязательна' })
+  @IsNotEmpty()
   category: string;
 
-  @ApiPropertyOptional({
-    description: 'Описание товара',
-    example: 'Стильные умные часы с AMOLED дисплеем',
-  })
+  @ApiPropertyOptional({ example: 'Стильные умные часы с AMOLED дисплеем' })
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiProperty({
-    description: 'Цена товара в рублях',
-    example: 12990,
-  })
+  @ApiProperty({ example: 12990 })
   @Type(() => Number)
-  @IsNumber({}, { message: 'Цена должна быть числом' })
-  @Min(0, { message: 'Цена не может быть отрицательной' })
+  @IsNumber()
+  @Min(0)
   price: number;
 
-  @ApiPropertyOptional({
-    description: 'URL изображения товара',
-    example: 'https://example.com/watch.jpg',
-  })
-  @IsUrl({}, { message: 'Некорректный URL изображения' })
+  @ApiPropertyOptional({ example: 'https://example.com/watch.jpg' })
+  @IsUrl()
   @IsOptional()
   image?: string;
 }
