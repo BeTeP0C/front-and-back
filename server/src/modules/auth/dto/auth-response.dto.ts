@@ -15,14 +15,19 @@ export class UserResponseDto {
 }
 
 export class LoginResponseDto {
-  @ApiProperty({ description: 'Успешность авторизации' })
-  success: boolean;
+  @ApiProperty({ description: 'Access токен для авторизации' })
+  accessToken: string;
 
-  @ApiProperty({ description: 'Данные пользователя', type: UserResponseDto })
-  user: UserResponseDto;
+  @ApiProperty({ description: 'Refresh токен для обновления' })
+  refreshToken: string;
+}
 
-  @ApiProperty({ description: 'JWT токен для авторизации', required: false })
-  access_token?: string;
+export class TokensResponseDto {
+  @ApiProperty({ description: 'Access токен для авторизации' })
+  accessToken: string;
+
+  @ApiProperty({ description: 'Refresh токен для обновления' })
+  refreshToken: string;
 }
 
 export class RegisterResponseDto extends UserResponseDto {}

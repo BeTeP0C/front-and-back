@@ -10,8 +10,10 @@ import { AuthService } from './auth.service';
 import {
   RegisterDto,
   LoginDto,
+  RefreshDto,
   UserResponseDto,
   LoginResponseDto,
+  TokensResponseDto,
 } from './dto';
 import { JwtAuthGuard } from './guards';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -48,7 +50,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
-    description: 'Успешная авторизация',
+    description: 'Успешная авторизация - возвращает accessToken и refreshToken',
     type: LoginResponseDto,
   })
   @ApiResponse({
@@ -65,6 +67,27 @@ export class AuthController {
   })
   async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
     return this.authService.login(loginDto);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Обновление токенов' })
+  @ApiBody({ type: RefreshDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Новая пара токенов',
+    type: TokensResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'refreshToken is required',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or expired refresh token',
+  })
+  async refresh(@Body() refreshDto: RefreshDto): Promise<TokensResponseDto> {
+    return this.authService.refresh(refreshDto.refreshToken);
   }
 
   @Get('me')
