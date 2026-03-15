@@ -164,7 +164,7 @@ function App() {
             <ConfirmModal
                 isOpen={confirmOpen}
                 title="Удалить товар?"
-                message={productToDelete ? `Вы уверены, что хотите удалить "${productToDelete.name}"? Это действие нельзя отменить.` : ''}
+                message={productToDelete ? `Вы уверены, что хотите удалить "${productToDelete.title}"? Это действие нельзя отменить.` : ''}
                 onConfirm={confirmDelete}
                 onCancel={closeConfirm}
             />

@@ -9,6 +9,26 @@ const apiClient = axios.create({
 });
 
 export const api = {
+    // ==========================================
+    // AUTH - Аутентификация
+    // ==========================================
+
+    // Регистрация пользователя
+    register: async (userData) => {
+        const response = await apiClient.post("/auth/register", userData);
+        return response.data;
+    },
+
+    // Вход в систему
+    login: async (credentials) => {
+        const response = await apiClient.post("/auth/login", credentials);
+        return response.data;
+    },
+
+    // ==========================================
+    // PRODUCTS - Товары
+    // ==========================================
+
     // Получить все товары
     getProducts: async () => {
         const response = await apiClient.get("/products");
@@ -27,15 +47,14 @@ export const api = {
         return response.data;
     },
 
-    // Обновить товар
+    // Обновить товар (PUT)
     updateProduct: async (id, product) => {
-        const response = await apiClient.patch(`/products/${id}`, product);
+        const response = await apiClient.put(`/products/${id}`, product);
         return response.data;
     },
 
     // Удалить товар
     deleteProduct: async (id) => {
-        const response = await apiClient.delete(`/products/${id}`);
-        return response.data;
+        await apiClient.delete(`/products/${id}`);
     }
 };

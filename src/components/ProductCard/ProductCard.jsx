@@ -4,7 +4,7 @@ import Button from '../Button';
 import './ProductCard.scss';
 
 const ProductCard = ({ product, onEdit, onDelete }) => {
-    const { id, name, category, description, price, stock, image } = product;
+    const { id, title, category, description, price, stock, image } = product;
     const [imageError, setImageError] = useState(false);
 
     const formatPrice = (value) => {
@@ -12,6 +12,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     };
 
     const getStockStatus = () => {
+        if (stock === undefined || stock === null) return null;
         if (stock === 0) return { text: 'Нет в наличии', variant: 'sale' };
         if (stock < 10) return { text: `Осталось ${stock} шт.`, variant: 'sale' };
         return { text: 'В наличии', variant: 'default' };
@@ -29,9 +30,9 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
         <article className="product-card">
             <div className="product-card__image-container">
                 {hasValidImage ? (
-                    <img 
-                        src={image} 
-                        alt={name}
+                <img 
+                    src={image} 
+                    alt={title}
                         className="product-card__image"
                         onError={handleImageError}
                     />
@@ -46,20 +47,22 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
                         <span>{category}</span>
                     </div>
                 )}
-                <div className="product-card__badge">
-                    <Badge variant={stockStatus.variant}>{stockStatus.text}</Badge>
-                </div>
+                {stockStatus && (
+                    <div className="product-card__badge">
+                        <Badge variant={stockStatus.variant}>{stockStatus.text}</Badge>
+                    </div>
+                )}
             </div>
 
             <div className="product-card__content">
                 <span className="product-card__category">{category}</span>
-                <h2 className="product-card__title">{name}</h2>
+                <h2 className="product-card__title">{title}</h2>
                 <p className="product-card__description">{description}</p>
                 
                 <div className="product-card__footer">
                     <div className="product-card__price-block">
                         <span className="product-card__price">{formatPrice(price)} ₽</span>
-                        <span className="product-card__stock">Склад: {stock} шт.</span>
+                        {stock !== undefined && <span className="product-card__stock">Склад: {stock} шт.</span>}
                     </div>
                     <div className="product-card__actions">
                         <Button variant="secondary" onClick={() => onEdit(product)}>✏️</Button>

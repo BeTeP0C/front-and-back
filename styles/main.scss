@@ -1,0 +1,299 @@
+// ==========================================
+// ПЕРЕМЕННЫЕ (Variables)
+// ==========================================
+
+// Цветовая палитра
+$color-primary: #2d3436;
+$color-accent: #e17055;
+$color-accent-hover: #d35400;
+$color-background: #f8f9fa;
+$color-card-bg: #ffffff;
+$color-text: #2d3436;
+$color-text-light: #636e72;
+$color-border: #dfe6e9;
+$color-badge: #00b894;
+$color-badge-sale: #d63031;
+
+// Типографика
+$font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$font-size-base: 16px;
+$font-size-small: 14px;
+$font-size-large: 18px;
+$font-size-title: 24px;
+
+// Отступы и размеры
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Границы и тени
+$border-radius: 12px;
+$border-radius-small: 6px;
+$box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+$box-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.15);
+
+// Анимации
+$transition-speed: 0.3s;
+
+// ==========================================
+// МИКСИНЫ (Mixins)
+// ==========================================
+
+// Миксин для flexbox контейнера
+@mixin flex-center($direction: row, $justify: center, $align: center) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+// Миксин для плавных переходов
+@mixin smooth-transition($properties...) {
+    $result: ();
+    @each $property in $properties {
+        $result: append($result, $property $transition-speed ease-in-out, comma);
+    }
+    @if length($result) == 0 {
+        transition: all $transition-speed ease-in-out;
+    } @else {
+        transition: $result;
+    }
+}
+
+// Миксин для обрезки текста
+@mixin text-ellipsis($lines: 1) {
+    @if $lines == 1 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    } @else {
+        display: -webkit-box;
+        -webkit-line-clamp: $lines;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+// Миксин для кнопки
+@mixin button-style($bg-color, $text-color: white) {
+    background-color: $bg-color;
+    color: $text-color;
+    border: none;
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $border-radius-small;
+    font-size: $font-size-base;
+    font-weight: 600;
+    cursor: pointer;
+    @include smooth-transition(background-color, transform);
+
+    &:hover {
+        background-color: darken($bg-color, 10%);
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+// ==========================================
+// БАЗОВЫЕ СТИЛИ
+// ==========================================
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: $font-family;
+    font-size: $font-size-base;
+    background-color: $color-background;
+    color: $color-text;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: $spacing-xl;
+}
+
+// ==========================================
+// КОНТЕЙНЕР
+// ==========================================
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 36px;
+    color: $color-primary;
+    margin-bottom: $spacing-xl;
+    font-weight: 700;
+}
+
+// ==========================================
+// СЕТКА ТОВАРОВ
+// ==========================================
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: $spacing-lg;
+}
+
+// ==========================================
+// КАРТОЧКА ТОВАРА (с вложенной структурой)
+// ==========================================
+
+.product-card {
+    background-color: $color-card-bg;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    overflow: hidden;
+    @include smooth-transition(transform, box-shadow);
+
+    // Hover эффект для всей карточки
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: $box-shadow-hover;
+
+        // Вложенный селектор: эффект для изображения при hover на карточку
+        .product-card__image {
+            transform: scale(1.05);
+        }
+    }
+
+    // Вложенная структура: обёртка изображения
+    &__image-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 250px;
+        background-color: $color-border;
+    }
+
+    // Вложенная структура: изображение
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        @include smooth-transition(transform);
+    }
+
+    // Вложенная структура: бейдж
+    &__badge {
+        position: absolute;
+        top: $spacing-sm;
+        left: $spacing-sm;
+        background-color: $color-badge;
+        color: white;
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $border-radius-small;
+        font-size: $font-size-small;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        // Модификатор для бейджа скидки
+        &--sale {
+            background-color: $color-badge-sale;
+        }
+    }
+
+    // Вложенная структура: контент карточки
+    &__content {
+        padding: $spacing-lg;
+        @include flex-center(column, flex-start, stretch);
+        gap: $spacing-sm;
+    }
+
+    // Вложенная структура: заголовок
+    &__title {
+        font-size: $font-size-title;
+        font-weight: 700;
+        color: $color-primary;
+        @include text-ellipsis(1);
+    }
+
+    // Вложенная структура: описание
+    &__description {
+        font-size: $font-size-base;
+        color: $color-text-light;
+        line-height: 1.7;
+        @include text-ellipsis(3);
+        min-height: 80px;
+    }
+
+    // Вложенная структура: футер карточки
+    &__footer {
+        @include flex-center(row, space-between, center);
+        margin-top: $spacing-sm;
+        padding-top: $spacing-md;
+        border-top: 1px solid $color-border;
+    }
+
+    // Вложенная структура: цена
+    &__price {
+        font-size: $font-size-large;
+        font-weight: 700;
+        color: $color-accent;
+
+        // Вложенный селектор для зачёркнутой цены
+        s {
+            color: $color-text-light;
+            font-weight: 400;
+            font-size: $font-size-small;
+            margin-right: $spacing-xs;
+        }
+    }
+
+    // Вложенная структура: кнопка
+    &__button {
+        @include button-style($color-accent);
+    }
+}
+
+// ==========================================
+// АДАПТИВНОСТЬ
+// ==========================================
+
+@media (max-width: 768px) {
+    body {
+        padding: $spacing-md;
+    }
+
+    .page-title {
+        font-size: 28px;
+    }
+
+    .products {
+        grid-template-columns: 1fr;
+    }
+
+    .product-card {
+        &__image-wrapper {
+            height: 200px;
+        }
+
+        &__content {
+            padding: $spacing-md;
+        }
+
+        &__title {
+            font-size: $font-size-large;
+        }
+
+        &__footer {
+            flex-direction: column;
+            gap: $spacing-sm;
+
+            // Кнопка на всю ширину на мобильных
+            .product-card__button {
+                width: 100%;
+            }
+        }
+    }
+}
