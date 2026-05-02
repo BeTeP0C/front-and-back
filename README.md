@@ -1,6 +1,6 @@
 # TechStore — Интернет-магазин электроники
 
-Полнофункциональное веб-приложение интернет-магазина электроники с JWT-аутентификацией, ролевой моделью (RBAC) и админ-панелью. Разработано в рамках практических занятий по дисциплине "Фронтенд и бэкенд разработка".
+Полнофункциональное веб-приложение интернет-магазина электроники с JWT-аутентификацией, ролевой моделью (RBAC), админ-панелью и поддержкой PWA (offline-first, установка на устройство). Разработано в рамках практических занятий по дисциплине "Фронтенд и бэкенд разработка".
 
 ## Технологии
 
@@ -53,15 +53,23 @@ front-and-back/
     │   ├── api/                    # client.ts, auth.ts, products.ts, admin.ts
     │   ├── app/
     │   │   ├── page.tsx            # Главная (каталог товаров)
-    │   │   └── admin/page.tsx      # Админ-панель (управление пользователями)
+    │   │   ├── admin/page.tsx      # Админ-панель (управление пользователями)
+    │   │   └── manifest.ts         # PWA-манифест (Next.js Metadata API)
     │   ├── components/
     │   │   ├── AuthForm/           # Форма входа/регистрации
     │   │   ├── Header/             # Шапка с навигацией
     │   │   ├── ProductCard/        # Карточка товара
     │   │   ├── ProductModal/       # Модалка создания/редактирования
-    │   │   └── ConfirmModal/       # Модалка подтверждения
+    │   │   ├── ConfirmModal/       # Модалка подтверждения
+    │   │   ├── ServiceWorker/      # Регистрация Service Worker
+    │   │   ├── NetworkStatus/      # Индикатор онлайн/оффлайн
+    │   │   └── InstallPWA/         # Кнопка установки PWA
     │   ├── stores/                 # MobX: authStore, productsStore
     │   └── types/                  # TypeScript интерфейсы
+    ├── public/
+    │   ├── sw.js                   # Service Worker (кэширование, offline)
+    │   ├── offline.html            # Fallback-страница без сети
+    │   └── icons/                  # PWA-иконки (72–512px + apple-touch-icon)
     └── Dockerfile
 ```
 
@@ -175,6 +183,19 @@ docker-compose up --build
 - Logout на бэкенде (отзыв refresh-токена)
 - Модалка подтверждения выхода
 - Сообщения об ошибках на русском
+
+### ПР 13-14: PWA, Service Worker, Manifest
+- `manifest.ts` через Next.js Metadata API (name, icons, display: standalone, theme_color)
+- Набор PWA-иконок (72–512px + apple-touch-icon) — генерация через `sharp`
+- Ручной Service Worker (`public/sw.js`):
+  - **install** — pre-cache статических ресурсов
+  - **activate** — удаление старых кэшей
+  - **fetch** — Network First для API, Cache First для статики
+  - Offline fallback (`offline.html`)
+- Компонент `ServiceWorker` — регистрация SW при монтировании
+- Компонент `NetworkStatus` — индикатор онлайн/оффлайн (красная плашка при потере сети)
+- Компонент `InstallPWA` — кнопка установки для Chromium (`beforeinstallprompt`) + подсказка для Safari
+- Мета-теги для iOS: apple-touch-icon, apple-mobile-web-app-capable, theme-color
 
 ## Автор
 
