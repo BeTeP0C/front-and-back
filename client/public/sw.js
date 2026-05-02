@@ -1,4 +1,4 @@
-const CACHE_NAME = 'techstore-v1';
+const CACHE_NAME = 'techstore-v2';
 
 const PRE_CACHE_URLS = [
   '/',
@@ -87,22 +87,64 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-72x72.png',
+    vibrate: [200, 100, 200],
+    data: {
+      url: data.url,
+      reminderId: data.reminderId || null,
+      apiBase: data.apiBase || null,
+    },
+  };
+
+  if (data.reminderId) {
+    options.actions = [
+      { action: 'snooze_5m', title: 'Отложить на 5 мин' },
+    ];
+  }
+
+  const broadcastPayload = { type: 'PUSH_RECEIVED', title: data.title, body: data.body };
+
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-72x72.png',
-      vibrate: [200, 100, 200],
-      data: { url: data.url },
-    }),
+    Promise.all([
+      self.registration.showNotification(data.title, options),
+      new Promise((resolve) => {
+        try {
+          const bc = new BroadcastChannel('techstore_push');
+          bc.postMessage(broadcastPayload);
+          bc.close();
+        } catch (e) {
+          console.warn('[SW] BroadcastChannel failed:', e);
+        }
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+          clients.forEach((c) => c.postMessage(broadcastPayload));
+          resolve();
+        });
+      }),
+    ]),
   );
 });
 
-// Notification click: открыть / сфокусировать приложение и перейти к товару
+// Notification click: открыть приложение или отложить (snooze)
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const targetUrl = event.notification.data?.url || '/';
+  const { url, reminderId, apiBase } = event.notification.data || {};
+
+  if (event.action === 'snooze_5m' && reminderId && apiBase) {
+    event.waitUntil(
+      fetch(`${apiBase}/api/reminders/snooze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reminderId }),
+      }).catch((err) => console.error('[SW] Snooze request failed:', err)),
+    );
+    return;
+  }
+
+  const targetUrl = url || '/';
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {

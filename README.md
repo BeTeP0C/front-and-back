@@ -51,7 +51,8 @@ front-and-back/
 │   │       ├── products/           # CRUD товаров + emit WS/push
 │   │       ├── admin/              # Управление пользователями (RBAC)
 │   │       ├── events/             # EventsGateway (Socket.IO WebSocket)
-│   │       └── push/               # PushService, PushController, PushSubscription entity
+│   │       ├── push/               # PushService, PushController, PushSubscription entity
+│   │       └── reminders/          # Отложенные уведомления (in-memory scheduling)
 │   └── Dockerfile
 └── client/                         # Next.js Frontend
     ├── src/
@@ -164,6 +165,15 @@ docker-compose up --build
 | POST | `/api/push/unsubscribe` | user, admin | Отписаться от push |
 | POST | `/api/push/test` | admin | Отправить тестовый push всем |
 
+### Отложенные уведомления (Reminders)
+
+| Метод | Путь | Доступ | Описание |
+|-------|------|--------|----------|
+| POST | `/api/reminders/schedule` | admin | Запланировать push через N секунд |
+| POST | `/api/reminders/snooze` | все | Отложить уведомление на 5 минут |
+| GET | `/api/reminders` | admin | Список активных напоминаний |
+| DELETE | `/api/reminders/:id` | admin | Отменить напоминание |
+
 ### WebSocket события (Socket.IO)
 
 | Событие | Направление | Описание |
@@ -247,6 +257,20 @@ docker-compose up --build
   - Страница деталки товара `/products/[id]`
   - Карточки товаров кликабельны — переход к деталке
   - Loading-состояния на всех страницах
+
+### ПР 17: Отложенные Push-уведомления
+- **Server-side scheduling** — `RemindersModule` (NestJS):
+  - `RemindersService` хранит напоминания в `Map` (in-memory), планирует отправку через `setTimeout`
+  - Endpoints: `POST /api/reminders/schedule` (задержка 5–3600 сек), `POST /api/reminders/snooze` (перепланирование на 5 мин), `GET /api/reminders`, `DELETE /api/reminders/:id`
+  - При срабатывании таймера вызывается `PushService.sendToAll` с передачей `reminderId` в payload
+- **Service Worker — action "Отложить на 5 мин"**:
+  - Уведомления от напоминаний содержат action `snooze_5m`
+  - При нажатии "Отложить" SW отправляет `POST /api/reminders/snooze` на бэкенд
+  - Уведомление приходит повторно через 5 минут
+- **Frontend — UI планирования**:
+  - Форма в dropdown уведомлений: заголовок, текст, задержка в секундах
+  - Список активных напоминаний с обратным отсчётом и кнопкой отмены
+  - API-функции: `scheduleReminder`, `getReminders`, `cancelReminder`
 
 ## Автор
 

@@ -8,6 +8,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { EventsModule } from './modules/events/events.module';
 import { PushModule } from './modules/push/push.module';
+import { RemindersModule } from './modules/reminders/reminders.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { DatabaseModule } from './database/database.module';
     AdminModule,
     EventsModule,
     PushModule,
+    RemindersModule,
   ],
 })
 export class AppModule {}

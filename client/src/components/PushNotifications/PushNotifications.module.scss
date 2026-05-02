@@ -4,6 +4,8 @@
   position: relative;
 }
 
+// --- Bell button ---
+
 .bellBtn {
   width: 38px;
   height: 38px;
@@ -33,50 +35,106 @@
   line-height: 1;
 }
 
-.dot {
+.badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: $color-green;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: $color-accent;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 2px solid $color-card;
 }
+
+// --- Dropdown ---
 
 .dropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 280px;
+  width: 340px;
+  max-height: min(560px, calc(100vh - 90px));
+  display: flex;
+  flex-direction: column;
   background: $color-card;
   border: 1px solid $color-border;
   border-radius: $radius;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
   z-index: 200;
-  overflow: hidden;
-  animation: dropIn 0.15s ease-out;
+  animation: dropIn 0.18s ease-out;
 }
 
 @keyframes dropIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .dropdownHeader {
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.9rem;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   border-bottom: 1px solid $color-border;
   color: $color-text;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tabRow {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid $color-border;
+  background: rgba($color-bg, 0.3);
+}
+
+.tab {
+  flex: 1;
+  padding: 0.4rem 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: $color-muted;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { color: $color-text; }
+}
+
+.tabActive {
+  background: rgba($color-cyan, 0.1);
+  color: $color-cyan;
 }
 
 .dropdownBody {
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($color-border, 0.8);
+    border-radius: 2px;
+  }
 }
+
+// --- Status ---
 
 .statusRow {
   display: flex;
@@ -85,14 +143,14 @@
 }
 
 .statusLabel {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: $color-muted;
 }
 
 .statusValue {
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  padding: 0.2rem 0.6rem;
+  padding: 0.15rem 0.55rem;
   border-radius: 999px;
 }
 
@@ -107,22 +165,24 @@
 }
 
 .warning {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: $color-red;
   background: rgba($color-red, 0.08);
-  padding: 0.5rem 0.75rem;
+  padding: 0.45rem 0.65rem;
   border-radius: $radius-sm;
   line-height: 1.4;
 }
 
+// --- Action buttons ---
+
 .actionBtn,
 .actionBtnDanger {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.5rem;
   border: none;
   border-radius: $radius-sm;
   font-weight: 600;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -152,11 +212,123 @@
   }
 }
 
-.divider {
-  height: 1px;
-  background: $color-border;
-  margin: 0.25rem 0;
+// --- History section ---
+
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.15rem;
+}
+
+.sectionTitle {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: $color-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clearBtn {
+  font-size: 0.66rem;
+  color: rgba($color-muted, 0.6);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  transition: all 0.15s;
+
+  &:hover {
+    color: $color-red;
+    background: rgba($color-red, 0.08);
+  }
+}
+
+.historyItem {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: rgba($color-bg, 0.4);
+  border: 1px solid transparent;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: rgba($color-border, 0.6);
+    background: rgba($color-bg, 0.6);
+  }
+}
+
+.historyIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba($color-cyan, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.historyContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.historyItemTitle {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: $color-text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.historyItemBody {
+  font-size: 0.7rem;
+  color: $color-muted;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.historyItemTime {
+  font-size: 0.62rem;
+  color: rgba($color-muted, 0.5);
+  margin-top: 0.1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 1.5rem 0.5rem;
+  color: rgba($color-muted, 0.4);
+}
+
+.emptyIcon {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.emptyText {
+  font-size: 0.78rem;
+}
+
+// --- Admin section ---
 
 .adminSection {
   display: flex;
@@ -164,32 +336,221 @@
   gap: 0.5rem;
 }
 
-.adminLabel {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: $color-muted;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.adminBtnRow {
+  display: flex;
+  gap: 0.4rem;
 }
 
-.testBtn {
-  width: 100%;
-  padding: 0.55rem;
-  border: 1px solid $color-green;
+.smallBtn {
+  flex: 1;
+  padding: 0.45rem 0.5rem;
   border-radius: $radius-sm;
-  background: rgba($color-green, 0.08);
-  color: $color-green;
   font-weight: 600;
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
+  text-align: center;
+  border: 1px solid $color-border;
+  background: rgba($color-bg, 0.4);
+  color: $color-muted;
 
   &:hover:not(:disabled) {
-    background: rgba($color-green, 0.15);
+    border-color: $color-cyan;
+    color: $color-cyan;
+    background: rgba($color-cyan, 0.05);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+}
+
+.smallBtnActive {
+  border-color: $color-cyan;
+  color: $color-cyan;
+  background: rgba($color-cyan, 0.08);
+}
+
+// --- Scheduler ---
+
+.scheduler {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.input {
+  width: 100%;
+  padding: 0.55rem 0.65rem 0.55rem 2rem;
+  background: rgba($color-bg, 0.6);
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  color: $color-text;
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder { color: rgba($color-muted, 0.35); }
+
+  &:focus {
+    border-color: $color-cyan;
+    box-shadow: 0 0 0 2px rgba($color-cyan, 0.08);
+  }
+}
+
+.textarea {
+  composes: input;
+  resize: none;
+  min-height: 52px;
+  padding-top: 0.5rem;
+}
+
+.delayGroup {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba($color-bg, 0.6);
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: $color-cyan;
+  }
+}
+
+.delayInput {
+  flex: 1;
+  padding: 0.55rem 0.65rem 0.55rem 2rem;
+  background: transparent;
+  border: none;
+  color: $color-text;
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  min-width: 0;
+}
+
+.delaySuffix {
+  padding: 0.55rem 0.7rem;
+  background: rgba($color-border, 0.3);
+  color: $color-muted;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid $color-border;
+  white-space: nowrap;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.55rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, $color-cyan, darken($color-cyan, 12%));
+  color: #000;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 16px rgba($color-cyan, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.successMsg {
+  font-size: 0.74rem;
+  color: $color-green;
+  text-align: center;
+  padding: 0.25rem 0;
+}
+
+// --- Active reminders ---
+
+.remindersList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.reminderItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.5rem;
+  background: rgba($color-bg, 0.4);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+
+  &:hover { border-color: rgba($color-border, 0.6); }
+}
+
+.reminderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.reminderName {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: $color-text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reminderTime {
+  font-size: 0.68rem;
+  color: $color-cyan;
+}
+
+.reminderCancel {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: $color-muted;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  transition: all 0.15s;
+
+  &:hover {
+    background: rgba($color-red, 0.12);
+    color: $color-red;
   }
 }

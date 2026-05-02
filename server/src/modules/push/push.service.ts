@@ -53,15 +53,24 @@ export class PushService implements OnModuleInit {
     await this.subscriptionRepo.delete({ endpoint });
   }
 
-  async sendToAll(title: string, body: string, url?: string): Promise<void> {
+  async sendToAll(title: string, body: string, url?: string, reminderId?: string): Promise<void> {
     const publicKey = process.env.VAPID_PUBLIC_KEY;
     if (!publicKey) {
       this.logger.warn('Cannot send push: VAPID keys not configured');
       return;
     }
 
+    const apiBase = process.env.CORS_ORIGIN
+      ? `http://localhost:${process.env.PORT || 4000}`
+      : 'http://localhost:4000';
+
     const subscriptions = await this.subscriptionRepo.find();
-    const payload = JSON.stringify({ title, body, url: url || '/' });
+    const payload = JSON.stringify({
+      title,
+      body,
+      url: url || '/',
+      ...(reminderId && { reminderId, apiBase }),
+    });
 
     const results = await Promise.allSettled(
       subscriptions.map((sub) => {

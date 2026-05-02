@@ -4,4 +4,5 @@ export * from './products';
 export * from './admin';
 export * from './events';
 export * from './push';
+export * from './reminders';
 export * from './queue';
