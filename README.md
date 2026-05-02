@@ -1,276 +1,186 @@
 # TechStore — Интернет-магазин электроники
 
-Полнофункциональное веб-приложение интернет-магазина электроники с аутентификацией пользователей, разработанное в рамках практических занятий по дисциплине "Фронтенд и бэкенд разработка".
+Полнофункциональное веб-приложение интернет-магазина электроники с JWT-аутентификацией, ролевой моделью (RBAC) и админ-панелью. Разработано в рамках практических занятий по дисциплине "Фронтенд и бэкенд разработка".
 
-## 📋 Описание проекта
-
-Проект представляет собой SPA-приложение с клиент-серверной архитектурой:
-- **Frontend**: React + Vite + SCSS
-- **Backend**: Node.js + Express.js
-- **Аутентификация**: bcrypt (хеширование паролей с солью)
-- **Документация API**: Swagger (OpenAPI 3.0)
-
-## 🛠 Технологии
+## Технологии
 
 ### Frontend
+- Next.js 14 (App Router)
 - React 18
-- Vite 5
-- SCSS (с переменными и миксинами)
-- Axios (HTTP-клиент)
+- TypeScript
+- MobX (стейт-менеджмент)
+- Axios (HTTP-клиент с interceptors)
+- SCSS Modules
 
 ### Backend
-- Node.js
-- Express.js
+- NestJS 11
+- TypeORM (SQLite для dev / PostgreSQL для production)
+- Passport + passport-jwt (JWT-аутентификация)
 - bcrypt (хеширование паролей)
-- nanoid (генерация ID)
-- cors (CORS middleware)
-- swagger-jsdoc + swagger-ui-express (документация API)
+- Swagger (OpenAPI документация)
+- class-validator / class-transformer (валидация DTO)
 
-## 📁 Структура проекта
+### Инфраструктура
+- Docker + Docker Compose (PostgreSQL, Redis, server, client)
+- Multi-stage Dockerfile для обоих приложений
+
+## Структура проекта
 
 ```
 front-and-back/
-├── server/                     # Backend
-│   ├── app.js                  # Главный файл сервера
-│   ├── package.json
-│   └── node_modules/
-├── src/                        # Frontend
-│   ├── api/
-│   │   └── index.js            # API клиент (axios)
-│   ├── components/
-│   │   ├── Badge/              # Компонент бейджа
-│   │   ├── Button/             # Компонент кнопки
-│   │   ├── ConfirmModal/       # Модалка подтверждения удаления
-│   │   ├── ProductCard/        # Карточка товара
-│   │   └── ProductModal/       # Модалка создания/редактирования
-│   ├── styles/
-│   │   ├── _variables.scss     # SCSS переменные
-│   │   ├── _mixins.scss        # SCSS миксины
-│   │   └── global.scss         # Глобальные стили
-│   ├── App.jsx                 # Главный компонент
-│   ├── App.scss
-│   └── main.jsx                # Точка входа
-├── index.html
+├── docker-compose.yml
 ├── package.json
-├── vite.config.js
-└── README.md
+├── server/                         # NestJS Backend
+│   ├── src/
+│   │   ├── main.ts                 # Bootstrap: CORS, Swagger, ValidationPipe
+│   │   ├── app.module.ts
+│   │   ├── config/                 # database, jwt, redis конфиги
+│   │   ├── common/
+│   │   │   ├── decorators/         # @CurrentUser(), @Roles()
+│   │   │   ├── guards/             # RolesGuard (RBAC)
+│   │   │   ├── filters/            # HttpExceptionFilter
+│   │   │   └── types/              # JwtPayload, ApiResponse
+│   │   ├── database/
+│   │   │   └── seeds/              # ProductsSeeder, AdminSeeder
+│   │   └── modules/
+│   │       ├── auth/               # register, login, refresh, logout, me
+│   │       ├── users/              # User entity + service
+│   │       ├── products/           # CRUD товаров
+│   │       └── admin/              # Управление пользователями (RBAC)
+│   └── Dockerfile
+└── client/                         # Next.js Frontend
+    ├── src/
+    │   ├── api/                    # client.ts, auth.ts, products.ts, admin.ts
+    │   ├── app/
+    │   │   ├── page.tsx            # Главная (каталог товаров)
+    │   │   └── admin/page.tsx      # Админ-панель (управление пользователями)
+    │   ├── components/
+    │   │   ├── AuthForm/           # Форма входа/регистрации
+    │   │   ├── Header/             # Шапка с навигацией
+    │   │   ├── ProductCard/        # Карточка товара
+    │   │   ├── ProductModal/       # Модалка создания/редактирования
+    │   │   └── ConfirmModal/       # Модалка подтверждения
+    │   ├── stores/                 # MobX: authStore, productsStore
+    │   └── types/                  # TypeScript интерфейсы
+    └── Dockerfile
 ```
 
-## 🚀 Установка и запуск
+## Запуск
 
-### 1. Клонирование репозитория
-```bash
-git clone <url-репозитория>
-cd front-and-back
-```
-
-### 2. Установка зависимостей
-
-**Frontend:**
-```bash
-npm install
-```
-
-**Backend:**
-```bash
-cd server
-npm install
-```
-
-### 3. Запуск приложения
-
-**Backend (порт 3000):**
-```bash
-cd server
-node app.js
-```
-
-**Frontend (порт 5173):**
-```bash
-npm run dev
-```
-
-### 4. Открытие в браузере
-- **Приложение**: http://localhost:5173
-- **Swagger UI**: http://localhost:3000/api-docs
-
-## 📡 API Endpoints
-
-### Аутентификация (Auth)
-
-| Метод | Путь | Описание |
-|-------|------|----------|
-| POST | `/api/auth/register` | Регистрация пользователя |
-| POST | `/api/auth/login` | Вход в систему |
-
-### Товары (Products)
-
-| Метод | Путь | Описание |
-|-------|------|----------|
-| GET | `/api/products` | Получить список товаров |
-| GET | `/api/products/:id` | Получить товар по ID |
-| POST | `/api/products` | Создать товар |
-| PUT | `/api/products/:id` | Обновить параметры товара |
-| DELETE | `/api/products/:id` | Удалить товар |
-
-### Структура сущности "Пользователь" (User)
-
-```json
-{
-  "id": "abc123",
-  "email": "ivan@example.com",
-  "first_name": "Иван",
-  "last_name": "Петров",
-  "password": "$2b$10$..." // хешированный bcrypt
-}
-```
-
-### Структура сущности "Товар" (Product)
-
-```json
-{
-  "id": "xyz789",
-  "title": "Умные часы Premium",
-  "category": "Часы",
-  "description": "Стильные умные часы с AMOLED дисплеем",
-  "price": 12990,
-  "image": "https://example.com/watch.jpg"
-}
-```
-
-## 🔐 Аутентификация
-
-### Хеширование паролей (bcrypt)
-
-Пароли хешируются с использованием алгоритма bcrypt с солью:
-
-```javascript
-const bcrypt = require('bcrypt');
-
-// Хеширование
-async function hashPassword(password) {
-    const rounds = 10;
-    return bcrypt.hash(password, rounds);
-}
-
-// Проверка
-async function verifyPassword(password, passwordHash) {
-    return bcrypt.compare(password, passwordHash);
-}
-```
-
-### Пример регистрации
+### Локально (dev)
 
 ```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"ivan@example.com","first_name":"Иван","last_name":"Петров","password":"qwerty123"}'
+# Установка зависимостей
+npm run install:all
+
+# Backend (порт 4000, SQLite)
+npm run dev:server
+
+# Frontend (порт 3000)
+npm run dev:client
 ```
 
-### Пример входа
+### Docker
 
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"ivan@example.com","password":"qwerty123"}'
+docker-compose up --build
 ```
 
-## ✨ Функциональность
+Поднимает 4 контейнера:
 
-### Карточка товара
-- Название (title)
-- Категория
-- Описание
-- Цена
-- Изображение (с заглушкой при ошибке загрузки)
+| Сервис | Порт | Описание |
+|--------|------|----------|
+| postgres | 5432 | PostgreSQL 16 |
+| redis | 6379 | Redis 7 |
+| server | 4000 | NestJS API |
+| client | 3000 | Next.js |
 
-### CRUD операции
-- ✅ Просмотр списка товаров (12 товаров по умолчанию)
-- ✅ Добавление нового товара
-- ✅ Редактирование товара
-- ✅ Удаление товара с подтверждением
+### Доступ
+
+- Приложение: http://localhost:3000
+- API: http://localhost:4000/api
+- Swagger: http://localhost:4000/api-docs
+- Админ: `admin@techstore.com` / `admin123`
+
+## API Endpoints
 
 ### Аутентификация
-- ✅ Регистрация с хешированием пароля (bcrypt)
-- ✅ Вход с проверкой пароля
-- ✅ Защита от дублирования email
 
-### UI/UX
-- Адаптивный дизайн
-- Тёмная тема
-- Анимации и hover-эффекты
-- Модальные окна с блокировкой скролла
+| Метод | Путь | Доступ | Описание |
+|-------|------|--------|----------|
+| POST | `/api/auth/register` | все | Регистрация |
+| POST | `/api/auth/login` | все | Вход (возвращает access + refresh) |
+| POST | `/api/auth/refresh` | все | Обновление пары токенов |
+| POST | `/api/auth/logout` | все | Отзыв refresh-токена |
+| GET | `/api/auth/me` | user, admin | Текущий пользователь |
 
-## 📖 Swagger документация
+### Товары
 
-Интерактивная документация API доступна по адресу: http://localhost:3000/api-docs
+| Метод | Путь | Доступ | Описание |
+|-------|------|--------|----------|
+| GET | `/api/products` | все | Список товаров (?category=, ?search=) |
+| GET | `/api/products/:id` | все | Товар по ID |
+| POST | `/api/products` | admin | Создать товар |
+| PUT | `/api/products/:id` | admin | Обновить товар |
+| DELETE | `/api/products/:id` | admin | Удалить товар |
 
-Возможности:
-- Просмотр всех эндпоинтов (Auth + Products)
-- Описание параметров и ответов
-- Тестирование запросов в браузере (Try it out)
+### Админ-панель
 
-## 🧪 Тестирование API
+| Метод | Путь | Доступ | Описание |
+|-------|------|--------|----------|
+| GET | `/api/admin/users` | admin | Список всех пользователей |
+| PATCH | `/api/admin/users/:id/role` | admin | Изменить роль (нельзя себе) |
 
-### Регистрация пользователя
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","first_name":"Test","last_name":"User","password":"password123"}'
-```
+## Ролевая модель (RBAC)
 
-### Вход в систему
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
-```
+Две роли: `user` и `admin`.
 
-### Получить все товары
-```bash
-curl http://localhost:3000/api/products
-```
+- **user** — просмотр каталога товаров
+- **admin** — полный CRUD товаров + управление пользователями
 
-### Создать товар
-```bash
-curl -X POST http://localhost:3000/api/products \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Новый товар","category":"Категория","description":"Описание","price":9990}'
-```
+Реализация:
+- `@Roles()` декоратор + `RolesGuard` на бэкенде
+- Роль включена в JWT payload (`{ sub, email, role }`)
+- Фронтенд скрывает UI-элементы управления для обычных пользователей
+- Админ не может изменить свою собственную роль (защита на фронте и бэке)
 
-## 📚 Выполненные практические занятия
+## Аутентификация
 
-### Практическое занятие №1
-- Реализация карточки товара на SCSS
-- Использование переменных и миксинов
-- Вложенная структура селекторов (BEM)
+- Пароли хешируются через `bcrypt` (10 раундов)
+- Access token (JWT, 15 мин) + Refresh token (JWT, 7 дней)
+- Refresh-токены хранятся в `Set` на бэке с ротацией при обновлении
+- Axios interceptor автоматически обновляет токены при 401
+- Logout отзывает refresh-токен на сервере
 
-### Практическое занятие №2
-- Создание сервера на Node.js + Express
-- Реализация REST API с CRUD операциями
-- Middleware для логирования и CORS
+## Выполненные практические занятия
 
-### Практическое занятие №4
-- Интеграция React-клиента с Express-сервером
-- Использование axios для HTTP-запросов
-- Полноценный интернет-магазин с 10+ товарами
+### ПР 1-5: Основа проекта
+- Карточка товара на SCSS, REST API, интеграция клиент-сервер
+- Swagger документация
 
-### Практическое занятие №5
-- Подключение Swagger (swagger-jsdoc, swagger-ui-express)
-- JSDoc-аннотации для документирования API
-- Интерактивная документация по адресу /api-docs
+### ПР 7-8: Аутентификация
+- Регистрация/вход, bcrypt, JWT, защищённые маршруты
 
-### Практическое занятие №7
-- Аутентификация пользователей
-- Хеширование паролей с bcrypt + соль
-- Маршруты /api/auth/register и /api/auth/login
-- Сущность User с полями: id, email, first_name, last_name, password
+### ПР 9: Refresh-токены
+- Refresh-токены + `POST /api/auth/refresh`
 
-## 👨‍💻 Автор
+### ПР 10: Фронтенд аутентификации
+- Хранение токенов в localStorage, авто-refresh при 401 (axios interceptors)
 
-Практические занятия по дисциплине "Фронтенд и бэкенд разработка"  
+### ПР 11: Ролевая модель (RBAC)
+- Роли admin/user, `@Roles()` декоратор, `RolesGuard`
+- Admin API: список пользователей, смена ролей
+- Защита товаров: просмотр для всех, изменение только admin
+- Страница `/admin` с управлением пользователями
+- Logout на бэкенде (отзыв refresh-токена)
+- Модалка подтверждения выхода
+- Сообщения об ошибках на русском
+
+## Автор
+
+Практические занятия по дисциплине "Фронтенд и бэкенд разработка"
 МИРЭА, ИПТИП, 4 семестр, 2025/2026 уч. год
 
-## 📄 Лицензия
+## Лицензия
 
 MIT
