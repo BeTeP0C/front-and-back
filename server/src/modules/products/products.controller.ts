@@ -4,6 +4,9 @@ import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto, ProductResponseDto } from './dto';
 import { Product } from './entities/product.entity';
 import { JwtAuthGuard } from '../auth/guards';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @ApiTags('Products')
 @Controller('api/products')
@@ -11,11 +14,13 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Создать товар' })
+  @ApiOperation({ summary: 'Создать товар (admin)' })
   @ApiBody({ type: CreateProductDto })
   @ApiResponse({ status: 201, type: ProductResponseDto })
+  @ApiResponse({ status: 403, description: 'Недостаточно прав' })
   async create(@Body() dto: CreateProductDto): Promise<Product> {
     return this.productsService.create(dto);
   }
@@ -43,22 +48,26 @@ export class ProductsController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Обновить товар' })
+  @ApiOperation({ summary: 'Обновить товар (admin)' })
   @ApiParam({ name: 'id' })
   @ApiBody({ type: UpdateProductDto })
   @ApiResponse({ status: 200, type: ProductResponseDto })
+  @ApiResponse({ status: 403, description: 'Недостаточно прав' })
   async update(@Param('id') id: string, @Body() dto: UpdateProductDto): Promise<Product> {
     return this.productsService.update(id, dto);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Удалить товар' })
+  @ApiOperation({ summary: 'Удалить товар (admin)' })
   @ApiParam({ name: 'id' })
+  @ApiResponse({ status: 403, description: 'Недостаточно прав' })
   async remove(@Param('id') id: string): Promise<void> {
     return this.productsService.remove(id);
   }

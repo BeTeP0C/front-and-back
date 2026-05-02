@@ -16,6 +16,10 @@ class AuthStore {
     return !!this.user;
   }
 
+  get isAdmin(): boolean {
+    return this.user?.role === 'admin';
+  }
+
   async checkAuth() {
     if (!hasTokens()) {
       runInAction(() => { this.loading = false; });

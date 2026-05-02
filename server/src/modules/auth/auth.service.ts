@@ -25,22 +25,42 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private generateAccessToken(user: { id: string; email: string }): string {
+  private generateAccessToken(user: {
+    id: string;
+    email: string;
+    role: string;
+  }): string {
     return this.jwtService.sign(
-      { sub: user.id, email: user.email },
+      { sub: user.id, email: user.email, role: user.role },
       { secret: ACCESS_SECRET, expiresIn: ACCESS_EXPIRES_IN } as any,
     );
   }
 
-  private generateRefreshToken(user: { id: string; email: string }): string {
+  private generateRefreshToken(user: {
+    id: string;
+    email: string;
+    role: string;
+  }): string {
     return this.jwtService.sign(
-      { sub: user.id, email: user.email },
+      { sub: user.id, email: user.email, role: user.role },
       { secret: REFRESH_SECRET, expiresIn: REFRESH_EXPIRES_IN } as any,
     );
   }
 
-  private toUserResponse(user: { id: string; email: string; firstName: string; lastName: string }): UserResponseDto {
-    return { id: user.id, email: user.email, first_name: user.firstName, last_name: user.lastName };
+  private toUserResponse(user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  }): UserResponseDto {
+    return {
+      id: user.id,
+      email: user.email,
+      first_name: user.firstName,
+      last_name: user.lastName,
+      role: user.role,
+    };
   }
 
   async register(dto: RegisterDto): Promise<UserResponseDto> {

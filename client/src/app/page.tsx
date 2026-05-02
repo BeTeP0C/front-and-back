@@ -79,7 +79,9 @@ function HomePage() {
           </div>
         )}
         {!productsStore.loading && !productsStore.error && productsStore.items.length === 0 && (
-          <div className={styles.status}>Товаров пока нет. Добавьте первый!</div>
+          <div className={styles.status}>
+            {authStore.isAdmin ? 'Товаров пока нет. Добавьте первый!' : 'Товаров пока нет.'}
+          </div>
         )}
         {productsStore.items.length > 0 && (
           <div className={styles.grid}>
@@ -92,14 +94,18 @@ function HomePage() {
 
       <footer className={styles.footer}>© {new Date().getFullYear()} TechStore</footer>
 
-      <ProductModal isOpen={modalOpen} mode={modalMode} product={editProduct} onClose={closeModal} onSubmit={handleSubmitModal} />
-      <ConfirmModal
-        isOpen={confirmOpen}
-        title="Удалить товар?"
-        message={deleteTarget ? `Удалить «${deleteTarget.title}»? Действие нельзя отменить.` : ''}
-        onConfirm={confirmDelete}
-        onCancel={() => { setConfirmOpen(false); setDeleteTarget(null); }}
-      />
+      {authStore.isAdmin && (
+        <>
+          <ProductModal isOpen={modalOpen} mode={modalMode} product={editProduct} onClose={closeModal} onSubmit={handleSubmitModal} />
+          <ConfirmModal
+            isOpen={confirmOpen}
+            title="Удалить товар?"
+            message={deleteTarget ? `Удалить «${deleteTarget.title}»? Действие нельзя отменить.` : ''}
+            onConfirm={confirmDelete}
+            onCancel={() => { setConfirmOpen(false); setDeleteTarget(null); }}
+          />
+        </>
+      )}
     </div>
   );
 }

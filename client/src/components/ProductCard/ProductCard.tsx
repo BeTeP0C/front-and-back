@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { authStore } from '@/stores';
 import type { Product } from '@/types';
 import styles from './ProductCard.module.scss';
 
@@ -12,7 +14,7 @@ interface Props {
 
 const formatPrice = (v: number) => new Intl.NumberFormat('ru-RU').format(v);
 
-export default function ProductCard({ product, onEdit, onDelete }: Props) {
+function ProductCard({ product, onEdit, onDelete }: Props) {
   const [imgError, setImgError] = useState(false);
   const hasImg = product.image && !imgError;
 
@@ -32,12 +34,16 @@ export default function ProductCard({ product, onEdit, onDelete }: Props) {
         <p className={styles.desc}>{product.description}</p>
         <div className={styles.footer}>
           <span className={styles.price}>{formatPrice(product.price)} ₽</span>
-          <div className={styles.actions}>
-            <button className={styles.btnEdit} onClick={() => onEdit(product)}>✏️</button>
-            <button className={styles.btnDel} onClick={() => onDelete(product.id)}>🗑️</button>
-          </div>
+          {authStore.isAdmin && (
+            <div className={styles.actions}>
+              <button className={styles.btnEdit} onClick={() => onEdit(product)}>✏️</button>
+              <button className={styles.btnDel} onClick={() => onDelete(product.id)}>🗑️</button>
+            </div>
+          )}
         </div>
       </div>
     </article>
   );
 }
+
+export default observer(ProductCard);

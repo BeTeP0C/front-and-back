@@ -5,6 +5,7 @@ export class UserResponseDto {
   @ApiProperty() email: string;
   @ApiProperty() first_name: string;
   @ApiProperty() last_name: string;
+  @ApiProperty() role: string;
 }
 
 export class LoginResponseDto {

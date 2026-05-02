@@ -7,11 +7,12 @@ interface Props {
   isOpen: boolean;
   title: string;
   message: string;
+  confirmText?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-export default function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }: Props) {
+export default function ConfirmModal({ isOpen, title, message, confirmText = 'Удалить', onConfirm, onCancel }: Props) {
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
@@ -26,7 +27,7 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
         <p className={styles.message}>{message}</p>
         <div className={styles.actions}>
           <button className={styles.btnCancel} onClick={onCancel}>Отмена</button>
-          <button className={styles.btnDanger} onClick={onConfirm}>Удалить</button>
+          <button className={styles.btnDanger} onClick={onConfirm}>{confirmText}</button>
         </div>
       </div>
     </div>
