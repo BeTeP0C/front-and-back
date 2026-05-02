@@ -6,6 +6,7 @@
   overflow: hidden;
   border: 1px solid $color-border;
   transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
   &:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba($color-accent, 0.15); }
 }
 

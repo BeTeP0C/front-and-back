@@ -44,6 +44,21 @@ class ProductsStore {
       this.items = this.items.filter((p) => p.id !== id);
     });
   }
+
+  onProductCreated(product: Product) {
+    const exists = this.items.some((p) => p.id === product.id);
+    if (!exists) {
+      this.items.unshift(product);
+    }
+  }
+
+  onProductUpdated(product: Product) {
+    this.items = this.items.map((p) => (p.id === product.id ? product : p));
+  }
+
+  onProductDeleted(id: string) {
+    this.items = this.items.filter((p) => p.id !== id);
+  }
 }
 
 export const productsStore = new ProductsStore();

@@ -8,6 +8,8 @@ import Header from '@/components/Header';
 import ProductCard from '@/components/ProductCard';
 import ProductModal from '@/components/ProductModal';
 import ConfirmModal from '@/components/ConfirmModal';
+import Spinner from '@/components/Spinner/Spinner';
+import SkeletonCard from '@/components/SkeletonCard/SkeletonCard';
 import type { Product, CreateProductPayload } from '@/types';
 import styles from './page.module.scss';
 
@@ -53,13 +55,14 @@ function HomePage() {
     if (modalMode === 'create') {
       await productsStore.create(data);
     } else if (data.id) {
-      await productsStore.update(data.id, data);
+      const { id, ...payload } = data;
+      await productsStore.update(id, payload);
     }
     closeModal();
   };
 
   if (authStore.loading) {
-    return <div className={styles.status}>Загрузка...</div>;
+    return <Spinner fullPage text="Загрузка..." />;
   }
 
   if (!authStore.isAuth) {
@@ -71,11 +74,17 @@ function HomePage() {
       <Header onAddProduct={openCreate} />
 
       <main className={styles.main}>
-        {productsStore.loading && <div className={styles.status}>Загрузка товаров...</div>}
         {productsStore.error && (
           <div className={styles.statusError}>
             {productsStore.error}
             <button className={styles.retryBtn} onClick={() => productsStore.fetchAll()}>Повторить</button>
+          </div>
+        )}
+        {productsStore.loading && (
+          <div className={styles.grid}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         )}
         {!productsStore.loading && !productsStore.error && productsStore.items.length === 0 && (
@@ -83,7 +92,7 @@ function HomePage() {
             {authStore.isAdmin ? 'Товаров пока нет. Добавьте первый!' : 'Товаров пока нет.'}
           </div>
         )}
-        {productsStore.items.length > 0 && (
+        {!productsStore.loading && productsStore.items.length > 0 && (
           <div className={styles.grid}>
             {productsStore.items.map((p) => (
               <ProductCard key={p.id} product={p} onEdit={openEdit} onDelete={handleDeleteClick} />

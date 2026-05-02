@@ -1,0 +1,195 @@
+@use '../../styles/variables' as *;
+
+.container {
+  position: relative;
+}
+
+.bellBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: $radius-sm;
+  border: 1px solid $color-border;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: $color-muted;
+  }
+}
+
+.bellBtnActive {
+  border-color: $color-cyan;
+  background: rgba($color-cyan, 0.08);
+}
+
+.bellIcon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $color-green;
+  border: 2px solid $color-card;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: $color-card;
+  border: 1px solid $color-border;
+  border-radius: $radius;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  z-index: 200;
+  overflow: hidden;
+  animation: dropIn 0.15s ease-out;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownHeader {
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-bottom: 1px solid $color-border;
+  color: $color-text;
+}
+
+.dropdownBody {
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statusLabel {
+  font-size: 0.8rem;
+  color: $color-muted;
+}
+
+.statusValue {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.statusOn {
+  background: rgba($color-green, 0.12);
+  color: $color-green;
+}
+
+.statusOff {
+  background: rgba($color-muted, 0.12);
+  color: $color-muted;
+}
+
+.warning {
+  font-size: 0.78rem;
+  color: $color-red;
+  background: rgba($color-red, 0.08);
+  padding: 0.5rem 0.75rem;
+  border-radius: $radius-sm;
+  line-height: 1.4;
+}
+
+.actionBtn,
+.actionBtnDanger {
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  border-radius: $radius-sm;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.actionBtn {
+  background: linear-gradient(135deg, $color-cyan, darken($color-cyan, 15%));
+  color: #000;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 15px rgba($color-cyan, 0.3);
+  }
+}
+
+.actionBtnDanger {
+  background: transparent;
+  border: 1px solid $color-border;
+  color: $color-muted;
+
+  &:hover:not(:disabled) {
+    border-color: $color-red;
+    color: $color-red;
+  }
+}
+
+.divider {
+  height: 1px;
+  background: $color-border;
+  margin: 0.25rem 0;
+}
+
+.adminSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.adminLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: $color-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.testBtn {
+  width: 100%;
+  padding: 0.55rem;
+  border: 1px solid $color-green;
+  border-radius: $radius-sm;
+  background: rgba($color-green, 0.08);
+  color: $color-green;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba($color-green, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

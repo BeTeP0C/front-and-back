@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { observer } from 'mobx-react-lite';
 import { authStore } from '@/stores';
 import ConfirmModal from '@/components/ConfirmModal';
+import PushNotifications from '@/components/PushNotifications/PushNotifications';
 import styles from './Header.module.scss';
 
 interface Props {
@@ -32,6 +33,7 @@ function Header({ onAddProduct }: Props) {
               )}
             </>
           )}
+          <PushNotifications />
           <button className={styles.logoutBtn} onClick={() => setLogoutOpen(true)}>Выйти</button>
         </div>
       </header>

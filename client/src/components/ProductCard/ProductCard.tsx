@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { observer } from 'mobx-react-lite';
 import { authStore } from '@/stores';
 import type { Product } from '@/types';
@@ -15,11 +16,16 @@ interface Props {
 const formatPrice = (v: number) => new Intl.NumberFormat('ru-RU').format(v);
 
 function ProductCard({ product, onEdit, onDelete }: Props) {
+  const router = useRouter();
   const [imgError, setImgError] = useState(false);
   const hasImg = product.image && !imgError;
 
+  const handleCardClick = () => {
+    router.push(`/products/${product.id}`);
+  };
+
   return (
-    <article className={styles.card}>
+    <article className={styles.card} onClick={handleCardClick}>
       <div className={styles.imageWrap}>
         {hasImg ? (
           <img src={product.image} alt={product.title} className={styles.image} onError={() => setImgError(true)} />
@@ -36,8 +42,8 @@ function ProductCard({ product, onEdit, onDelete }: Props) {
           <span className={styles.price}>{formatPrice(product.price)} ₽</span>
           {authStore.isAdmin && (
             <div className={styles.actions}>
-              <button className={styles.btnEdit} onClick={() => onEdit(product)}>✏️</button>
-              <button className={styles.btnDel} onClick={() => onDelete(product.id)}>🗑️</button>
+              <button className={styles.btnEdit} onClick={(e) => { e.stopPropagation(); onEdit(product); }}>✏️</button>
+              <button className={styles.btnDel} onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}>🗑️</button>
             </div>
           )}
         </div>

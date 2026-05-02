@@ -52,6 +52,8 @@ services:
       REFRESH_EXPIRES_IN: 7d
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      VAPID_PUBLIC_KEY: BKsyWkUvzBXDIVd-lnfHSacsazFLje_UPTwO3_vh9GhE0gsg9CFfGIvrii0wnbew_sPgCJbiiSwd4lEDo0dI-UE
+      VAPID_PRIVATE_KEY: Pn48xZCoK_X2-5Clu-VMgvuX1C0PPu2s4BfL5cou9qM
     depends_on:
       postgres:
         condition: service_healthy
@@ -67,6 +69,7 @@ services:
       - "3000:3000"
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:4000/api
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: BKsyWkUvzBXDIVd-lnfHSacsazFLje_UPTwO3_vh9GhE0gsg9CFfGIvrii0wnbew_sPgCJbiiSwd4lEDo0dI-UE
     depends_on:
       - server
 

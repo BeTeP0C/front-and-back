@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import ServiceWorker from '@/components/ServiceWorker';
 import NetworkStatus from '@/components/NetworkStatus';
 import InstallPWA from '@/components/InstallPWA';
+import SocketProvider from '@/components/SocketProvider/SocketProvider';
 import '@/styles/globals.scss';
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NetworkStatus />
         {children}
         <InstallPWA />
+        <SocketProvider />
         <ServiceWorker />
       </body>
     </html>

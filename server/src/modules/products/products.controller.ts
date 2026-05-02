@@ -7,11 +7,17 @@ import { JwtAuthGuard } from '../auth/guards';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
+import { EventsGateway } from '../events/events.gateway';
+import { PushService } from '../push/push.service';
 
 @ApiTags('Products')
 @Controller('api/products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly eventsGateway: EventsGateway,
+    private readonly pushService: PushService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -22,7 +28,10 @@ export class ProductsController {
   @ApiResponse({ status: 201, type: ProductResponseDto })
   @ApiResponse({ status: 403, description: 'Недостаточно прав' })
   async create(@Body() dto: CreateProductDto): Promise<Product> {
-    return this.productsService.create(dto);
+    const product = await this.productsService.create(dto);
+    this.eventsGateway.emitProductCreated(product);
+    this.pushService.sendToAll('Новый товар', product.title, `/products/${product.id}`).catch(() => {});
+    return product;
   }
 
   @Get()
@@ -57,7 +66,10 @@ export class ProductsController {
   @ApiResponse({ status: 200, type: ProductResponseDto })
   @ApiResponse({ status: 403, description: 'Недостаточно прав' })
   async update(@Param('id') id: string, @Body() dto: UpdateProductDto): Promise<Product> {
-    return this.productsService.update(id, dto);
+    const product = await this.productsService.update(id, dto);
+    this.eventsGateway.emitProductUpdated(product);
+    this.pushService.sendToAll('Товар обновлён', product.title, `/products/${product.id}`).catch(() => {});
+    return product;
   }
 
   @Delete(':id')
@@ -69,6 +81,9 @@ export class ProductsController {
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: 403, description: 'Недостаточно прав' })
   async remove(@Param('id') id: string): Promise<void> {
-    return this.productsService.remove(id);
+    const product = await this.productsService.findOne(id);
+    await this.productsService.remove(id);
+    this.eventsGateway.emitProductDeleted(id);
+    this.pushService.sendToAll('Товар удалён', product.title, '/').catch(() => {});
   }
 }

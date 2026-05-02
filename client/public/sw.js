@@ -75,6 +75,48 @@ async function networkFirst(request) {
   }
 }
 
+// Push: показать уведомление
+self.addEventListener('push', (event) => {
+  let data = { title: 'TechStore', body: 'Новое уведомление', url: '/' };
+
+  if (event.data) {
+    try {
+      data = { ...data, ...event.data.json() };
+    } catch {
+      data.body = event.data.text();
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-72x72.png',
+      vibrate: [200, 100, 200],
+      data: { url: data.url },
+    }),
+  );
+});
+
+// Notification click: открыть / сфокусировать приложение и перейти к товару
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const targetUrl = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        if ('focus' in client) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(targetUrl);
+    }),
+  );
+});
+
 // Cache First: сначала кэш, при промахе — сеть
 async function cacheFirst(request) {
   const cached = await caches.match(request);

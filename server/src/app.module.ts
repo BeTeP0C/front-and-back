@@ -6,6 +6,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { EventsModule } from './modules/events/events.module';
+import { PushModule } from './modules/push/push.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -17,6 +19,8 @@ import { DatabaseModule } from './database/database.module';
     UsersModule,
     ProductsModule,
     AdminModule,
+    EventsModule,
+    PushModule,
   ],
 })
 export class AppModule {}
