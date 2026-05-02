@@ -17,4 +17,11 @@ export const authApi = {
     const { data } = await apiClient.get<User>('/auth/me');
     return data;
   },
+
+  async logout(): Promise<void> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) {
+      await apiClient.post('/auth/logout', { refreshToken }).catch(() => {});
+    }
+  },
 };

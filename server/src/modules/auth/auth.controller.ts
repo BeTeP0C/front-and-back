@@ -40,6 +40,16 @@ export class AuthController {
     return this.authService.refresh(dto.refreshToken);
   }
 
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Выход (отзыв refresh-токена)' })
+  @ApiBody({ type: RefreshDto })
+  @ApiResponse({ status: 200, description: 'Токен отозван' })
+  logout(@Body() dto: RefreshDto): { message: string } {
+    this.authService.logout(dto.refreshToken);
+    return { message: 'Вы вышли из системы' };
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

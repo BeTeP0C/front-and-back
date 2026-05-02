@@ -1,0 +1,93 @@
+@use '../../styles/variables' as *;
+
+.page { min-height: 100vh; display: flex; flex-direction: column; }
+
+.main {
+  flex: 1; padding: 2rem; max-width: 900px; width: 100%; margin: 0 auto;
+}
+
+.title {
+  font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: $color-muted; font-size: 0.9rem; margin-bottom: 2rem;
+}
+
+.status {
+  text-align: center; padding: 3rem 1rem; color: $color-muted; font-size: 1.1rem;
+}
+
+.error {
+  text-align: center; padding: 2rem; color: $color-red; font-size: 0.95rem;
+}
+
+.list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.userCard {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem; background: $color-card;
+  border: 1px solid $color-border; border-radius: $radius;
+  transition: border-color 0.2s;
+  &:hover { border-color: rgba($color-cyan, 0.3); }
+}
+
+.userInfo { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.userName {
+  font-weight: 600; font-size: 0.95rem; color: $color-text;
+}
+
+.userEmail {
+  font-size: 0.8rem; color: $color-muted;
+}
+
+.userMeta {
+  font-size: 0.75rem; color: rgba($color-muted, 0.6); margin-top: 0.15rem;
+}
+
+.roleToggle {
+  display: flex; border-radius: $radius-sm; overflow: hidden;
+  border: 1px solid $color-border;
+}
+
+.roleOption {
+  padding: 0.5rem 1.25rem; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; border: none; background: transparent;
+  color: $color-muted; transition: all 0.25s;
+  position: relative;
+
+  &:first-child { border-right: 1px solid $color-border; }
+}
+
+.roleOptionActive {
+  composes: roleOption;
+}
+
+.roleOptionActiveUser {
+  composes: roleOptionActive;
+  background: rgba($color-green, 0.15); color: $color-green;
+}
+
+.roleOptionActiveAdmin {
+  composes: roleOptionActive;
+  background: rgba($color-cyan, 0.15); color: $color-cyan;
+}
+
+.roleOptionDisabled {
+  composes: roleOption;
+  cursor: not-allowed; opacity: 0.4;
+}
+
+.selfBadge {
+  display: inline-block; margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem; border-radius: 999px;
+  font-size: 0.65rem; font-weight: 600;
+  background: rgba($color-cyan, 0.1); color: $color-cyan;
+  vertical-align: middle;
+}
+
+.footer {
+  text-align: center; padding: 1.5rem; color: $color-muted;
+  border-top: 1px solid $color-border; font-size: 0.85rem;
+}

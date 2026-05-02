@@ -61,7 +61,8 @@ class AuthStore {
     }
   }
 
-  logout() {
+  async logout() {
+    await authApi.logout();
     clearTokens();
     this.user = null;
   }

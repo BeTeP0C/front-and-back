@@ -94,13 +94,13 @@ export class AuthService {
 
   async refresh(refreshToken: string): Promise<TokensResponseDto> {
     if (!this.refreshTokens.has(refreshToken)) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Невалидный refresh-токен');
     }
 
     try {
       const payload = this.jwtService.verify(refreshToken, { secret: REFRESH_SECRET });
       const user = await this.usersService.findById(payload.sub);
-      if (!user) throw new UnauthorizedException('User not found');
+      if (!user) throw new UnauthorizedException('Пользователь не найден');
 
       this.refreshTokens.delete(refreshToken);
 
@@ -111,8 +111,12 @@ export class AuthService {
       return { accessToken: newAccess, refreshToken: newRefresh };
     } catch {
       this.refreshTokens.delete(refreshToken);
-      throw new UnauthorizedException('Invalid or expired refresh token');
+      throw new UnauthorizedException('Невалидный или просроченный refresh-токен');
     }
+  }
+
+  logout(refreshToken: string): void {
+    this.refreshTokens.delete(refreshToken);
   }
 
   async validateUser(userId: string) {
