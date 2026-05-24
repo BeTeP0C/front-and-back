@@ -6,6 +6,8 @@
     "dev:server": "cd server && npm run start:dev",
     "install:all": "cd server && npm install && cd ../client && npm install",
     "lb:up": "docker compose -f docker-compose.load-balancing.yml up --build",
-    "lb:down": "docker compose -f docker-compose.load-balancing.yml down -v"
+    "lb:down": "docker compose -f docker-compose.load-balancing.yml down -v",
+    "cluster:up": "docker compose -f docker-compose.cluster.yml up --build",
+    "cluster:down": "docker compose -f docker-compose.cluster.yml down -v"
   }
 }
