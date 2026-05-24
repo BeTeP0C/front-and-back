@@ -6,3 +6,4 @@ export * from './events';
 export * from './push';
 export * from './reminders';
 export * from './queue';
+export * from './cache';
